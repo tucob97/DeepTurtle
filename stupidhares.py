@@ -125,15 +125,14 @@ class game():
                         
                         if int(not(playerhistory[-1]))==1: #cousin of DeepTurtle --> stupidhares
                             test=np.array([self.table.nplayer[1].position,self.table.nplayer[1].stack])
-                            test = test.reshape((2,1))
-                            test=np.transpose(test)
+                            test = test.reshape((1,2))                            
                             tg =np.random.randint(2, size=len(g))
                             for i in range(len(g)):
                                 if i==np.random.randint(len(g)):
                                     tg[i]=1
                                 else:
                                     tg[i]=0
-                            tg= tg.reshape((len(g),1))
+                            tg= tg.reshape((1,len(g))
                             #h=np.transpose(h)
                             model = Sequential()
                             model.add(Dense(units=64, activation='relu', input_dim=2))
@@ -145,7 +144,6 @@ class game():
                                           metrics=['accuracy'])
                             model.compile(loss=keras.losses.categorical_crossentropy,
                                           optimizer=keras.optimizers.SGD(lr=0.01, momentum=0.9, nesterov=True))
-                            tg= np.transpose(tg)
                             model.fit(test,tg,epochs=1)
                             score = model.predict(test)
                             #print(type(score))
