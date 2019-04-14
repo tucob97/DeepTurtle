@@ -75,7 +75,7 @@ model.compile(loss='mse',
 model.fit(Yf_test,Xf_test,epochs=180,validation_split=0.2,verbose=0)
 
 t2=time.time()
-model.save('stupid_model.h5')
+model.save('stupid_model.h5') #save model 
 
 print(t2-t1,'seconds')
 #score of model
