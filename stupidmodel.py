@@ -3,7 +3,7 @@
 """
 Created on Tue Apr  9 23:26:42 2019
 
-@author: edo
+@author: Matheritmo
 """
 from collections import namedtuple
 import numpy as np
