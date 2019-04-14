@@ -41,7 +41,7 @@ class game():
                     print('\n ######\n first event \n #########')
                 if k !=0:
                     
-                    print('\n ##############\n other evento \n ####################\n')
+                    print('\n ##############\n other event \n ####################\n')
                 #time.sleep(3)             
                 playerhistory=[]
                 for i in range(len(self.table.nplayer)):
@@ -129,7 +129,7 @@ class game():
                             # arbitrary test for now , later i adjust this
                             test=np.array([self.table.nplayer[1].position,self.table.nplayer[1].stack,self.table.nplayer[1].stack/self.table.bigb,8,0.05])
                             test=test.reshape((1,5))
-                            model = load_model('stupid_model.h5')
+                            model = load_model('stupid_model.h5') #load the model 
                             score = model.predict(test)
                             if len(g)==2:                                
                                 if np.argmax(score)==0:
