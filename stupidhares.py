@@ -5,12 +5,13 @@ Created on Tue Apr  9 23:08:44 2019
 
 @author: Matheritmo
 """
-import PokerInit as pk
+import pokerrule as pk
 from collections import namedtuple
 import numpy as np
 import random
 import time
 import keras
+from keras.models import load_model
 from keras import Sequential
 from keras.layers import Dense, Activation
 import numpy as np
@@ -71,7 +72,8 @@ class game():
                         print('movehistory',movehistory[-1])
                         g = pk.getactionpos(movehistory[-1].move,'preflop')
                         print(g,'is your possible move \n')
-                        if int(not(playerhistory[-1]))==0:                            
+                        if int(not(playerhistory[-1]))==0: 
+                            print(self.table.nplayer[int(not(playerhistory[-1]))].card1,self.table.nplayer[int(not(playerhistory[-1]))].card2)
                             while True:
                                 d=input('your choice is ')
                                 if int(d) in g:
@@ -81,11 +83,11 @@ class game():
                                     print(int(not(playerhistory[-1])))
                                     
                                         
-    
+
                             # 1 check , 2 call, 3 raise, 4 fold
     
                             if int(d) == 3:
-                                print(d)
+                                #print(d)
                                 
                                 if movehistory[-1].move==0:
                                     if len(movehistory)==3:
@@ -109,7 +111,7 @@ class game():
                                             
                                 else:
                                     while True:
-                                        print('here')
+                                        #print('here')
                                         x=input('amount ')
                                         if int(x)< 2*movehistory[-1].amount:
                                             print('bet error raise minimium 2*raise')
@@ -124,35 +126,32 @@ class game():
                         #agent init here
                         
                         if int(not(playerhistory[-1]))==1: #cousin of DeepTurtle --> stupidhares
-                            test=np.array([self.table.nplayer[1].position,self.table.nplayer[1].stack])
-                            test = test.reshape((1,2))                            
-                            tg =np.random.randint(2, size=len(g))
-                            for i in range(len(g)):
-                                if i==np.random.randint(len(g)):
-                                    tg[i]=1
-                                else:
-                                    tg[i]=0
-                            tg= tg.reshape((1,len(g))
-                            #h=np.transpose(h)
-                            model = Sequential()
-                            model.add(Dense(units=64, activation='relu', input_dim=2))
-                            model.add(Dense(units=len(g)))
-                            model.add(Activation('softmax'))
-                            #l=np.random.randint(1, size=len(g))
-                            model.compile(loss='categorical_crossentropy',
-                                          optimizer='sgd',
-                                          metrics=['accuracy'])
-                            model.compile(loss=keras.losses.categorical_crossentropy,
-                                          optimizer=keras.optimizers.SGD(lr=0.01, momentum=0.9, nesterov=True))
-                            model.fit(test,tg,epochs=1)
+                            # arbitrary test for now , later i adjust this
+                            test=np.array([self.table.nplayer[1].position,self.table.nplayer[1].stack,self.table.nplayer[1].stack/self.table.bigb,8,0.05])
+                            test=test.reshape((1,5))
+                            model = load_model('stupid_model.h5')
                             score = model.predict(test)
-                            #print(type(score))
-                            #print(np.argmax(score))
-                            #print(g[np.argmax(score)])
-                            mos=g[np.argmax(score)]
+                            if len(g)==2:                                
+                                if np.argmax(score)==0:
+                                    mf=g[np.argmax(score)]
+                                if np.argmax(score)==2:
+                                    mf=g[np.argmax(score)-1]
+                                if np.argmax(score)==1:
+                                    mf=g[np.argmax(score)-1]
+                                if np.argmax(score)==3:    
+                                    mf=g[0]
+                            if len(g)==3:
+                                if np.argmax(score)==0 or np.argmax(score)==1:                                    
+                                    mf=g[0]
+                                if np.argmax(score)==3:
+                                    mf=g[-1]
+                                else:
+                                    mf=g[1]
+                        #agent finish here
+                        #the amount of raise for now is choice randomly whit a gamma distribution(2-mean)
+                            mos=mf
                             print(mos)
                             if mos == 3:
-                                #print(mos)
                                 if movehistory[-1].move !=3:
                                     nc=np.random.gamma(2,2)
                                     nc +=2
@@ -168,41 +167,39 @@ class game():
                                             break
                                     
                                     b=action(3,finraise)
-                                    #print('HERE')
+                                    
                                 if movehistory[-1].move ==3:
-                                    #print('HERE')
+                                    
+                                    #reraise
                                     nc=np.random.gamma(2,2)
                                     nc +=2                                    
                                     res=movehistory[-1].amount
                                     reisfin=int(nc * res)
-                                    if res >= self.table.nplayer[int(not(playerhistory[-1]))].stack:
+                                    if reisfin >= (self.table.nplayer[1].stack):
                                         print('all in')
-                                        b= action(2,0)
-                                        break
-                                    elif reisfin >= res + self.table.nplayer[int(playerhistory[-1])].stack:
+                                        b= action(3,self.table.nplayer[1].stack)                                        
+                                    elif reisfin >= res + self.table.nplayer[0].stack:
                                         print('raise your all in')
-                                        b= action(3,int(self.table.nplayer[int(playerhistory[-1])].stack))
-                                        break
+                                        b= action(3,int(self.table.nplayer[0].stack + res))
+                                        
                                     else:
                                         b=action(3,int(reisfin))
-                                    #rp=self.table.nplayer[1].stack/self.table.bigb
-                                    #b=action(3,int(nc*res))
+                                    
                                    
                             if mos !=3:
                                 b=action(int(mos),0)
                                                         
                            
                             
-                            #print(type(int(b.move)))
+                        #call
                         if b.move==2:
                             if movehistory[-1].move==0:                                                             
 
                                 if len(movehistory)==4:
-                                    #print('coiche 4')  
-                                    #print(int(not(playerhistory[-1])))
+                                    
                                     
                                     playerhistory.append(int(not(playerhistory[-1]))) 
-                                    #print(int(not(playerhistory[-1])))
+                                    
                                     diff=(movehistory[-1].amount-self.table.smallb)
                                     self.table.nplayer[int(not(playerhistory[-1]))].stack -= diff
                                     self.table.pot += diff
@@ -210,7 +207,7 @@ class game():
                                     
                                 else:                                    
                                     playerhistory.append(int(not(playerhistory[-1])))
-                                    #print(int(not(playerhistory[-1])))
+                                    
                                     
                                     self.table.nplayer[int(not(playerhistory[-1]))].stack -= self.table.smallb
                                     self.table.pot += self.table.smallb
@@ -218,25 +215,35 @@ class game():
 
 
                             else:
-                                #print('choice else')           
+                                         
                                 
                                 diff=(movehistory[-1].amount)
-                                playerhistory.append(int(not(playerhistory[-1])))
-                                self.table.nplayer[int(playerhistory[-1])].stack -= diff
-                                self.table.pot += diff
-                                movehistory.append(b)
-                                #print('HERE')
                                 
+                                if diff >= self.table.nplayer[int(not(playerhistory[-1]))].stack:
+                                    self.table.pot += self.table.nplayer[int(not(playerhistory[-1]))].stack
+                                    self.table.nplayer[int(not(playerhistory[-1]))].stack = 0
+                                    movehistory.append(b)
+                                    playerhistory.append(int(not(playerhistory[-1])))
+
+                                else:                                                                         
+                                    self.table.nplayer[int(playerhistory[-1])].stack -= diff
+                                    self.table.pot += diff
+                                    playerhistory.append(int(not(playerhistory[-1])))
+                                    movehistory.append(b)
+                                    #print('HERE')
+                        #check        
                         if b.move==1:
                             movehistory.append(b)
                             playerhistory.append(int(not(playerhistory[-1])))
                         
+                        #raise
                         if b.move==3:
                             movehistory.append(b)
                             playerhistory.append(int(not(playerhistory[-1])))
                             self.table.pot += b.amount
                             self.table.nplayer[int(playerhistory[-1])].stack -=int(b.amount)
-                            
+                        
+                        #fold
                         if b.move==4:                            
                             self.table.nplayer[int(playerhistory[-1])].stack += self.table.pot
                             self.table.reset()
@@ -248,12 +255,13 @@ class game():
                             i=False
                             
                         if movehistory[-2].move==3 and movehistory[-1].move==2:
-                            print(self.table.pot)
+                            
                             i=False
                             
-                #print(i)       
+                #showdown  
                 if i==False:
                     self.table.flop()
+                    print('pot is ',self.table.pot)
                     win=self.table.winner()
                     print(self.table.tablecard,'\n')
                     if win[1]==11:
@@ -266,9 +274,11 @@ class game():
                         self.table.nplayer[int(h)].stack +=self.table.pot
                     for i in range(len(self.table.nplayer)):
                         if self.table.nplayer[i].stack<=0:
+                            print(self.table.nplayer[0].card,'\n',self.table.nplayer[0].stack,'\n')
+                            print(self.table.nplayer[1].card,'\n',self.table.nplayer[1].stack,'\n')
                             print('game finish')
                             time.sleep(3)
-                            quit(0)
+                            exit
                     
                        
                     print(self.table.nplayer[0].card,'\n',self.table.nplayer[0].stack,'\n')
