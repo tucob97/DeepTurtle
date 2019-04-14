@@ -8,8 +8,6 @@ Created on Tue Apr  9 23:26:42 2019
 from collections import namedtuple
 import numpy as np
 import random
-import pokerrule as pk
-import untitled0 as pg
 import keras
 from keras import Sequential
 from keras.layers import Dense, Activation
