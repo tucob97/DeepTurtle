@@ -5,7 +5,7 @@ Created on Tue Apr  9 23:08:44 2019
 
 @author: Matheritmo
 """
-import pokerrule as pk
+import PokerInit as pk
 from collections import namedtuple
 import numpy as np
 import random
