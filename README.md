@@ -1,5 +1,5 @@
 # DeepTurtle
-I project to program a poker agent for texas holdem.
+I planned to program a poker agent for texas holdem.
 
 When i have freetime I will publish my work under this project. DeepTurtle is my poker bot.
 It is not already finish , but i will update my repository step by step until finish the project.
